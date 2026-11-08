@@ -1,0 +1,35 @@
+# --- Build artifacts (PyInstaller) ---
+build/
+dist/
+*.exe
+!imagewarp.spec          # spec is source, keep it in the repo
+
+# --- Python ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+
+# --- Models (large binaries; downloaded separately) ---
+models/*.onnx
+models/.cache/
+
+# --- Local dev / scratch artifacts ---
+samples/
+out*.mp4
+out*.avi
+out*.txt
+err*.txt
+build.log
+test_*.py
+!test_raft.py
+# keep the verified RAFT sanity test
+debug_*.py
+inspect_*.py
+check_*.py
+find_*.py
+
+# --- OS ---
+Thumbs.db
+.DS_Store
