@@ -471,6 +471,7 @@ class App:
         n = len(self.frames)
 
         def step():
+            nonlocal idx
             if self.preview_stop.is_set():
                 return
             fr = self.frames[idx]

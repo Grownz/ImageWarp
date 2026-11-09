@@ -11,6 +11,73 @@ import cv2
 ONNX_ROOT = os.path.dirname(onnxruntime.__file__)
 CV2_ROOT = os.path.dirname(cv2.__file__)
 
+# Modules the app actually needs: tkinter (GUI), cv2 (OpenCV), numpy, onnxruntime.
+# Everything else is pulled in transitively by PyInstaller's hook system because it
+# happens to be installed in the environment. Exclude the heavy unused packages to
+# keep the one-file exe lean (target: well under 200 MB instead of multi-GB).
+EXCLUDES = [
+    # --- Heavy ML / DL frameworks (not used; CPU-only ONNX Runtime) ---
+    "torch", "torchvision", "torchaudio",
+    "tensorflow", "tensorflow.python", "keras",
+    "torch_directml", "torch_cpp_extension",
+    # --- Scientific / data stacks (not used) ---
+    "scipy", "scipy.*",
+    "sklearn", "sklearn.*",
+    "pandas", "pandas.*",
+    # --- Image / plotting libs (PIL included for preview rendering; matplotlib unused) ---
+    "matplotlib", "matplotlib.*",
+    "pygments",
+    # --- Transformers / NLP ecosystem (not used) ---
+    "transformers", "pydantic", "timm", "bitsandbytes",
+    "sentencepiece", "sacremoses",
+    "google", "google.api_core", "google.auth", "google.cloud",
+    "requests_oauthlib", "oauthlib",
+    # --- Audio / video / media (not used; OpenCV handles video) ---
+    "av", "av.*",
+    "torchaudio", "soundfile", "librosa", "resampy",
+    "pyav", "pydub",
+    # --- Serialization / storage (not used) ---
+    "pyarrow", "pyarrow.*",
+    "fsspec", "fsspec.*",
+    "h5py", "h5py.*",
+    "tables",
+    "datasets", "datasets.*",
+    # --- Scientific / geo / viz (not used) ---
+    "skimage", "skimage.*",
+    "numba", "numba.*",
+    "llvmlite",
+    "xarray", "netcdf4",
+    "cartopy", "basemap",
+    "geopandas", "shapely",
+    "folium", "bokeh", "plotly", "dash",
+    "streamlit",
+    # --- Web frameworks / servers (not used) ---
+    "flask", "django",
+    "fastapi", "uvicorn", "starlette",
+    "celery", "redis",
+    # --- Testing / docs (not used) ---
+    "pytest", "unittest", "mock",
+    "sphinx", "docutils", "hypothesis",
+    # --- Misc heavy hooks pulled in by PyInstaller ---
+    "triton", "triton.*",
+    "win32com", "pythoncom", "pywintypes",
+    "pycparser", "cypawn",
+    "jinja2", "markupsafe",
+    "dateutil",
+    "certifi", "charset_normalizer",
+    "cloudpickle", "urllib3",
+    "sqlite3",
+    "backports", "more_itertools",
+    "importlib_metadata", "tomli", "wheel", "platformdirs",
+    "pkg_resources", "setuptools", "distutils",
+    "jaraco", "jaraco.*",
+    "ipython", "ipython.*",
+    "jedi", "parso",
+    "shelve",
+    "websockets", "orjson", "anyio", "zoneinfo", "pytz",
+    "requests", "requests.*",  # app uses urllib via onnxruntime; requests not needed
+]
+
 
 def collect_package_dlls(root):
     """Return binaries list [(src, dest)] for every .dll under `root`,
@@ -52,7 +119,7 @@ a = Analysis(
     hookspath=["."],
     hooksdirs=[],
     runtime_hooks=[],
-    excludes=[],
+    excludes=EXCLUDES,
     cache=None,
     python_version=None,
 )
