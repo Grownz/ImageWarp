@@ -4,6 +4,10 @@ dist/
 *.exe
 !imagewarp.spec          # spec is source, keep it in the repo
 
+# --- Virtual environments ---
+venv/
+build_venv/
+
 # --- Python ---
 __pycache__/
 *.pyc
