@@ -271,7 +271,7 @@ def fit_to_output(frame):
 class App:
     def __init__(self, root):
         self.root = root
-        self.root.title("ImageWarp — Warp-Transition-Erzeuger")
+        self.root.title("ImageWarp — Warp Transition Generator")
         self.root.resizable(False, False)
 
         self.path_a = tk.StringVar()
@@ -293,42 +293,42 @@ class App:
 
         # File A
         row = ttk.Frame(f); row.pack(fill=tk.X, pady=2)
-        ttk.Label(row, text="Quelldatei (A):").pack(side=tk.LEFT)
+        ttk.Label(row, text="Source file (A):").pack(side=tk.LEFT)
         ent = ttk.Entry(row, textvariable=self.path_a, width=50)
         ent.pack(side=tk.LEFT, padx=6, fill=tk.X, expand=True)
-        ttk.Button(row, text="Durchsuchen…", command=self.pick_a).pack(side=tk.LEFT)
+        ttk.Button(row, text="Browse…", command=self.pick_a).pack(side=tk.LEFT)
 
         # File B
         row = ttk.Frame(f); row.pack(fill=tk.X, pady=2)
-        ttk.Label(row, text="Zieldatei (B):").pack(side=tk.LEFT)
+        ttk.Label(row, text="Target file (B):").pack(side=tk.LEFT)
         ent = ttk.Entry(row, textvariable=self.path_b, width=50)
         ent.pack(side=tk.LEFT, padx=6, fill=tk.X, expand=True)
-        ttk.Button(row, text="Durchsuchen…", command=self.pick_b).pack(side=tk.LEFT)
+        ttk.Button(row, text="Browse…", command=self.pick_b).pack(side=tk.LEFT)
 
         # Mode
         row = ttk.Frame(f); row.pack(fill=tk.X, pady=2)
-        ttk.Label(row, text="Modus:").pack(side=tk.LEFT)
+        ttk.Label(row, text="Mode:").pack(side=tk.LEFT)
         cb = ttk.Combobox(
             row, textvariable=self.mode, width=12,
-            values=["auto", "Bild (RAFT)", "Video (RIFE)"]
+            values=["auto", "Image (RAFT)", "Video (RIFE)"]
         )
         cb.pack(side=tk.LEFT, padx=6)
         cb.bind("<<ComboboxSelected>>", lambda e: self._on_mode_change())
 
         # Transition length
         row = ttk.Frame(f); row.pack(fill=tk.X, pady=2)
-        ttk.Label(row, text="Übergangsrahmen:").pack(side=tk.LEFT)
+        ttk.Label(row, text="Transition frames:").pack(side=tk.LEFT)
         sp = ttk.Spinbox(row, from_=2, to=120, textvariable=self.num_frames, width=6)
         sp.pack(side=tk.LEFT, padx=6)
 
         # Buttons
         row = ttk.Frame(f); row.pack(fill=tk.X, pady=8)
-        ttk.Button(row, text="Vorschau", command=self.preview).pack(side=tk.LEFT, padx=4)
-        ttk.Button(row, text="Als Video exportieren…", command=self.export).pack(side=tk.LEFT, padx=4)
-        ttk.Button(row, text="Beenden", command=self.root.quit).pack(side=tk.LEFT, padx=4)
+        ttk.Button(row, text="Preview", command=self.preview).pack(side=tk.LEFT, padx=4)
+        ttk.Button(row, text="Export as video…", command=self.export).pack(side=tk.LEFT, padx=4)
+        ttk.Button(row, text="Exit", command=self.root.quit).pack(side=tk.LEFT, padx=4)
 
         # Status
-        self.status = ttk.Label(f, text="Bereit", anchor=tk.W)
+        self.status = ttk.Label(f, text="Ready", anchor=tk.W)
         self.status.pack(fill=tk.X, pady=2)
 
         # Preview canvas (embedded)
@@ -343,8 +343,8 @@ class App:
     # ------------------------------------------------------------------ helpers
     def pick_a(self):
         path = filedialog.askopenfilename(
-            title="Quelldatei (A) wählen",
-            filetypes=[("Alle Dateien", "*.*"), ("Bilder", "*.jpg *.jpeg *.png *.bmp *.tif *.webp"),
+            title="Choose source file (A)",
+            filetypes=[("All files", "*.*"), ("Images", "*.jpg *.jpeg *.png *.bmp *.tif *.webp"),
                        ("Videos", "*.mp4 *.avi *.mkv *.mov *.wmv *.mpeg *.mpg")]
         )
         if path:
@@ -352,8 +352,8 @@ class App:
 
     def pick_b(self):
         path = filedialog.askopenfilename(
-            title="Zieldatei (B) wählen",
-            filetypes=[("Alle Dateien", "*.*"), ("Bilder", "*.jpg *.jpeg *.png *.bmp *.tif *.webp"),
+            title="Choose target file (B)",
+            filetypes=[("All files", "*.*"), ("Images", "*.jpg *.jpeg *.png *.bmp *.tif *.webp"),
                        ("Videos", "*.mp4 *.avi *.mkv *.mov *.wmv *.mpeg *.mpg")]
         )
         if path:
@@ -366,7 +366,7 @@ class App:
             if is_video(pa) or is_video(pb):
                 return "rife"
             return "raft"
-        if m.startswith("Bild"):
+        if m.startswith("Image"):
             return "raft"
         return "rife"
 
@@ -378,13 +378,13 @@ class App:
     def _prepare_inputs(self):
         pa, pb = self.path_a.get(), self.path_b.get()
         if not pa or not pb:
-            raise ValueError("Bitte beide Dateien wählen.")
+            raise ValueError("Please select both files.")
         if not os.path.exists(pa) or not os.path.exists(pb):
-            raise ValueError("Eine der Dateien existiert nicht.")
+            raise ValueError("One of the files does not exist.")
         mode = self._resolve_mode()
         if mode == "raft":
             if not (is_image(pa) and is_image(pb)):
-                raise ValueError("RAFT-Modus benötigt zwei Bilddateien.")
+                raise ValueError("RAFT mode requires two image files.")
             img_a = load_image(pa)
             img_b = load_image(pb)
             return img_a, img_b, "raft"
@@ -429,7 +429,7 @@ class App:
         return mode
 
     def _run_generate(self, callback, *extra_args):
-        self._status("Generiere Frames…")
+        self._status("Generating frames…")
         try:
             mode = self._generate()
             callback(mode, None, *extra_args)
@@ -439,7 +439,7 @@ class App:
     # ------------------------------------------------------------------ preview
     def preview(self):
         if not self.path_a.get() or not self.path_b.get():
-            messagebox.showwarning(self.root.title, "Bitte beide Dateien wählen.")
+            messagebox.showwarning(self.root.title, "Please select both files.")
             return
         self.preview_stop.set()
         # stop any running preview
@@ -447,19 +447,19 @@ class App:
             self.preview_thread.join(timeout=0.5)
         self.preview_stop.clear()
         self.frames = []
-        self._status("Generiere Vorschau…")
+        self._status("Generating preview…")
         self.canvas.delete("all")
         self._run_generate(self._preview_ready)
 
     def _preview_ready(self, mode, err):
         if err:
-            messagebox.showerror("Fehler", err)
-            self._status("Fehler: " + err)
+            messagebox.showerror("Error", err)
+            self._status("Error: " + err)
             return
         if not self.frames:
-            self._status("Keine Frames erzeugt.")
+            self._status("No frames generated.")
             return
-        self._status(f"Vorschau ({mode}) — {len(self.frames)} Frames")
+        self._status(f"Preview ({mode}) — {len(self.frames)} frames")
         self._run_preview()
 
     def _run_preview(self):
@@ -506,34 +506,34 @@ class App:
     # ------------------------------------------------------------------ export
     def export(self):
         if not self.path_a.get() or not self.path_b.get():
-            messagebox.showwarning(self.root.title, "Bitte beide Dateien wählen.")
+            messagebox.showwarning(self.root.title, "Please select both files.")
             return
         path = filedialog.asksaveasfilename(
-            title="Exportieren als Video",
+            title="Export as video",
             defaultextension=".mp4",
             filetypes=[("MP4 Video", "*.mp4"), ("AVI Video", "*.avi")]
         )
         if not path:
             return
-        self._status("Exportiere…")
+        self._status("Exporting…")
         self._run_generate(self._export_ready, path)
 
     def _export_ready(self, mode, err, path=None):
         if err:
-            messagebox.showerror("Fehler", err)
-            self._status("Fehler: " + err)
+            messagebox.showerror("Error", err)
+            self._status("Error: " + err)
             return
         if not self.frames:
-            messagebox.showerror("Fehler", "Keine Frames erzeugt.")
-            self._status("Keine Frames.")
+            messagebox.showerror("Error", "No frames generated.")
+            self._status("No frames.")
             return
         try:
             self._write_video(path, self.frames)
-            self._status(f"Exportiert: {os.path.basename(path)} ({len(self.frames)} Frames)")
-            messagebox.showinfo(self.root.title, f"Video gespeichert:\n{path}")
+            self._status(f"Exported: {os.path.basename(path)} ({len(self.frames)} frames)")
+            messagebox.showinfo(self.root.title, f"Video saved:\n{path}")
         except Exception as e:
-            messagebox.showerror("Fehler", str(e))
-            self._status("Export-Fehler: " + str(e))
+            messagebox.showerror("Error", str(e))
+            self._status("Export error: " + str(e))
 
     def _write_video(self, path, frames):
         fourcc = cv2.VideoWriter.fourcc(*"mp4v")

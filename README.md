@@ -1,4 +1,4 @@
-# ImageWarp — Warp-Transition-Erzeuger
+# ImageWarp — Warp Transition Generator
 
 Lean Windows x64 GUI app that creates warp transitions between two images or two videos using slim ONNX models.
 
@@ -30,10 +30,20 @@ This fetches:
 
 ## Build
 
+For a **lean** single-file exe (target: well under 200 MB instead of multi-GB), build in a clean venv with only the required packages:
+
 ```bash
-pyinstaller imagewarp.spec
+# 1. Create clean venv
+python -m venv build_venv
+build_venv\Scripts\pip install opencv-python-headless numpy onnxruntime pyinstaller
+
+# 2. Build (uses EXCLUDES list in imagewarp.spec to skip heavy unused packages)
+build_venv\Scripts\pyinstaller imagewarp.spec
 ```
+
 Produces a single-file `dist/ImageWarp.exe` (Windows x64).
+
+If you build from the system Python (which has many unrelated packages installed), PyInstaller's hook system will pull in transitive dependencies like torch, tensorflow, scipy, etc., resulting in a multi-GB exe. The clean venv approach avoids this.
 
 ## Usage
 
@@ -42,7 +52,7 @@ Produces a single-file `dist/ImageWarp.exe` (Windows x64).
 3. Set the number of transition frames.
 4. **Preview** the transition, then **export** as MP4/AVI video.
 
-The GUI is in German; model output / inference logs are in English.
+The GUI and all messages are in English; model output / inference logs are in English.
 
 ## Files
 

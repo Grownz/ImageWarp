@@ -138,7 +138,7 @@ exe = EXE(
     icon=None,
     onefile=True,
     name="ImageWarp",
-    description="ImageWarp - Warp-Transition-Erzeuger (RAFT/RIFE)",
+    description="ImageWarp - Warp Transition Generator (RAFT/RIFE)",
     disableconsole=False,
     uac=False,
 )
